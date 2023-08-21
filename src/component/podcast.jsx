@@ -1,79 +1,52 @@
-import { useEffect, useState } from 'react'
-import PodcastHtml from './podcast_html.jsx'
-import UploadEpisode from './upload_episode.jsx'
-import 'shikwasa/dist/shikwasa.min.css'
-import Swal from 'sweetalert2'
-import Shikwasa from 'shikwasa'
-import { MESON_ENDPOINT } from '../utils/arweave.js'
-import { isDarkMode } from '../utils/theme.js'
+import React, { useEffect, useState } from 'react';
+import PodcastHtml from './podcast_html.jsx';
+import UploadEpisode from './upload_episode.jsx';
+import Swal from 'sweetalert2';
+import 'shikwasa/dist/shikwasa.min.css';
+import Shikwasa from 'shikwasa'; // Import 'Shikwasa' as a default import
+import { MESON_ENDPOINT } from '../utils/arweave.js';
+import { isDarkMode } from '../utils/theme.js';
 import { fetchPodcasts } from '../utils/podcast.js';
 import { useTranslation } from 'react-i18next';
 
 export default function Podcast(props) {
-  const [loading, setLoading] = useState(true)
-  const [showEpisodeForm, setShowEpisodeForm] = useState(false)
-  const [addr, setAddr] = useState('')
-  const [thePodcast, setThePodcast] = useState(null)
-  const [podcastHtml, setPodcastHtml] = useState(null)
-  const [podcastEpisodes, setPodcastEpisodes] = useState([])
-  const { t } = useTranslation()
+  const [loading, setLoading] = useState(true);
+  const [showEpisodeForm, setShowEpisodeForm] = useState(false);
+  const [addr, setAddr] = useState('');
+  const [thePodcast, setThePodcast] = useState(null);
+  const [podcastHtml, setPodcastHtml] = useState(null);
+  const [podcastEpisodes, setPodcastEpisodes] = useState([]);
+  const { t } = useTranslation();
 
   const getPodcastEpisodes = async () => {
     const pid = props.match.params.podcastId;
 
     const response = await fetch(`https://whispering-retreat-94540.herokuapp.com/feeds/episodes/${pid}`, {
       method: 'GET',
-      headers: { 'Content-Type': 'application/json', }
+      headers: { 'Content-Type': 'application/json' }
     });
 
     const episodes = (await response.json())["episodes"];
     return episodes;
-  }
+  };
 
   const getPodcast = (p) => {
     let podcasts = p.filter(
       obj => !(obj && Object.keys(obj).length === 0)
-    )
+    );
     let id = props.match.params.podcastId;
-    let podcast = _findPodcastById(podcasts, id)
-    return podcast
-  }
+    let podcast = _findPodcastById(podcasts, id);
+    return podcast;
+  };
 
   const _findPodcastById = (podcastsList, id) => {
     let pList = podcastsList.filter(
       obj => !(obj && Object.keys(obj).length === 0)
-    )
+    );
 
-    const match = pList.find(podcast => podcast.pid === id)
-    return match
-  }
-
-  // let p = podcasts.find(podcastId => Object.values(podcasts).pid === podcastId)
-  // console.log(p)
-  /*
-  let p = podcasts.podcasts
-  for (var i=0, iLen=p.length; i<iLen; i++) {
-    if (p[i].id === id)
-    console.log(p[i])
-      return p[i];
-    }
-    */
-
-  // const linkValues = (podcast) => {
-  //   let p = podcast.podcasts
-  //   const keys = Object.keys(p)
-  //   const values = Object.values(p)
-  //   const resultArr = []
-
-  //   for (let i = 0; i < keys.length; i++) {
-  //     const currentValues = values[i]
-  //     const currentKey = keys[i]
-  //     currentValues["pid"] = currentKey
-  //     resultArr.push(currentValues)
-
-  //   }
-  //   return resultArr
-  // }
+    const match = pList.find(podcast => podcast.pid === id);
+    return match;
+  };
 
   const loadPodcastHtml = (p) => {
     return <PodcastHtml
@@ -87,8 +60,8 @@ export default function Podcast(props) {
       image={`${MESON_ENDPOINT}/${p.cover}`}
       key={p.pid}
       smallImage={true}
-    />
-  }
+    />;
+  };
 
   const tryAddressConnecting = async () => {
     let addr;
@@ -104,12 +77,12 @@ export default function Podcast(props) {
   };
 
   const loadEpisodes = async (podcast, episodes) => {
-    console.log(podcast)
-    const episodeList = []
+    console.log(podcast);
+    const episodeList = [];
     const addr = await tryAddressConnecting();
     for (let i in episodes) {
-      let e = episodes[i]
-      console.log("episode", e)
+      let e = episodes[i];
+      console.log("episode", e);
       if (e.eid !== 'FqPtfefS8QNGWdPcUcrEZ0SXk_IYiOA52-Fu6hXcesw') {
         episodeList.push(
           <div
